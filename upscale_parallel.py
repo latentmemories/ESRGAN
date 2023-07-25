@@ -1,6 +1,7 @@
 import concurrent.futures
 from functools import partial
 from pathlib import Path
+import multiprocessing
 import upscale
 
 def process_image(img_path, model, output_dir, skip_existing):
@@ -22,7 +23,8 @@ def main():
     # Create a new function with some arguments pre-filled
     func = partial(process_image, model=model, output_dir=output_dir, skip_existing=skip_existing)
 
-    with concurrent.futures.ProcessPoolExecutor() as executor:
+    num_cpus = multiprocessing.cpu_count()
+    with concurrent.futures.ProcessPoolExecutor(max_workers=num_cpus) as executor:
         list(executor.map(func, images))  # Consume the generator to start the computations
 
 if __name__ == "__main__":
