@@ -1,7 +1,8 @@
+import concurrent.futures
 from functools import partial
 from pathlib import Path
+import multiprocessing
 import upscale
-from dask.distributed import Client
 
 def process_image(img_path, model, output_dir, skip_existing):
     img_path = Path(img_path)
@@ -22,9 +23,9 @@ def main():
     # Create a new function with some arguments pre-filled
     func = partial(process_image, model=model, output_dir=output_dir, skip_existing=skip_existing)
 
-    with Client() as client:  # Create a Dask client
-        futures = client.map(func, images)  # Start computations in the background
-        results = client.gather(futures)  # Collect the results
+    num_cpus = multiprocessing.cpu_count()
+    with concurrent.futures.ProcessPoolExecutor(max_workers=num_cpus) as executor:
+        list(executor.map(func, images))  # Consume the generator to start the computations
 
 if __name__ == "__main__":
     main()
