@@ -24,7 +24,7 @@ def main():
     func = partial(process_image, model=model, output_dir=output_dir, skip_existing=skip_existing)
 
     num_cpus = multiprocessing.cpu_count()
-    with concurrent.futures.ProcessPoolExecutor(max_workers=num_cpus) as executor:
+    with concurrent.futures.ProcessPoolExecutor(max_workers=-1) as executor:
         list(executor.map(func, images))  # Consume the generator to start the computations
 
 if __name__ == "__main__":
