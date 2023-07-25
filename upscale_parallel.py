@@ -4,6 +4,8 @@ from pathlib import Path
 import upscale
 
 def process_image(img_path, model, output_dir, skip_existing):
+    img_path = Path(img_path)
+    output_dir = Path(output_dir)
     upscale_module = upscale.Upscale(model, img_path, output_dir)  # initialize a new Upscale object
     upscale_module.run(skip_existing=skip_existing)  # process the image
 
