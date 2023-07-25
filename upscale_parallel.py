@@ -3,9 +3,9 @@ from functools import partial
 from pathlib import Path
 import upscale
 
-def process_image(model, img_path, output_dir, skip_existing, verbose):
+def process_image(img_path, model, output_dir, skip_existing):
     upscale_module = upscale.Upscale()  # initialize a new Upscale object
-    upscale_module.run(model, img_path, output_dir, skip_existing=skip_existing, verbose=verbose)  # process the image
+    upscale_module.run(model, img_path, output_dir, skip_existing=skip_existing)  # process the image
 
 def main():
     input_dir = input("Enter the path to the input directory: ")
@@ -18,10 +18,10 @@ def main():
     images = list(input_folder.glob('*'))  # list of image file paths
 
     # Create a new function with some arguments pre-filled
-    func = partial(process_image, model, output_dir=output_dir, skip_existing=skip_existing, verbose=verbose)
+    func = partial(process_image, model=model, output_dir=output_dir, skip_existing=skip_existing)
 
     with concurrent.futures.ProcessPoolExecutor() as executor:
-        executor.map(func, images)
+        list(executor.map(func, images))  # Consume the generator to start the computations
 
 if __name__ == "__main__":
     main()
